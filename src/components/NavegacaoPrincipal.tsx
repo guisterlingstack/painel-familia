@@ -4,6 +4,7 @@ const ITENS = [
   { caminho: "/", rotulo: "Hoje" },
   { caminho: "/projetos", rotulo: "Projetos" },
   { caminho: "/agenda", rotulo: "Agenda" },
+  { caminho: "/configuracoes", rotulo: "Configurações" },
 ]
 
 /**
