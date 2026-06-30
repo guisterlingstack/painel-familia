@@ -1,45 +1,25 @@
-import { useEffect, useState } from "react"
-import { supabase } from "@/lib/supabase"
 import { usePessoa } from "@/contexts/PessoaContext"
-import type { Status } from "@/types/database"
+import { useDashboard } from "@/features/dashboard/useDashboard"
+import { useProjetosDoDia } from "@/features/dashboard/useProjetosDoDia"
+import { DashboardResumo } from "@/features/dashboard/DashboardResumo"
+import { ProjetosDoDiaLista } from "@/features/dashboard/ProjetosDoDiaLista"
 
 /**
  * Tela "Hoje" — primeira tela do sistema (tela inicial).
  *
- * Nesta Etapa 2, esta página faz um teste real de conexão com o
- * Supabase: ela busca a lista de status cadastrados no banco e
- * exibe na tela. Se os status aparecerem, a conexão está funcionando.
+ * Mostra: data atual, projetos programados para hoje (com horário,
+ * status e quem criou) e um dashboard resumido com números gerais
+ * do sistema.
  *
- * Nas próximas etapas, vamos preencher esta tela com:
- * - data atual
- * - projetos do dia
- * - horários
- * - quem criou cada projeto
- * - dashboard resumido
+ * Como ainda não existe uma forma de criar projetos pela interface
+ * (isso chega na Etapa 5), as listas aparecem vazias por enquanto —
+ * mas toda a estrutura já está pronta para os dados reais.
  */
 export function HojePage() {
   const { pessoa, sair } = usePessoa()
-  const [statusList, setStatusList] = useState<Status[]>([])
-  const [carregando, setCarregando] = useState(true)
-  const [erro, setErro] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function buscarStatus() {
-      const { data, error } = await supabase
-        .from("status")
-        .select("*")
-        .order("ordem")
-
-      if (error) {
-        setErro(error.message)
-      } else {
-        setStatusList(data ?? [])
-      }
-      setCarregando(false)
-    }
-
-    buscarStatus()
-  }, [])
+  const { dados, carregando: carregandoDashboard } = useDashboard()
+  const { projetosDoDia, carregando: carregandoProjetos } =
+    useProjetosDoDia()
 
   const hoje = new Date()
   const dataFormatada = hoje.toLocaleDateString("pt-BR", {
@@ -77,39 +57,25 @@ export function HojePage() {
           )}
         </header>
 
-        <div className="rounded-lg border border-border bg-card p-6">
+        <section className="mb-8">
           <h2 className="mb-3 text-sm font-semibold text-foreground">
-            Teste de conexão com o Supabase
+            Projetos de hoje
           </h2>
+          <ProjetosDoDiaLista
+            projetosDoDia={projetosDoDia}
+            carregando={carregandoProjetos}
+          />
+        </section>
 
-          {carregando && (
-            <p className="text-sm text-muted-foreground">Carregando...</p>
-          )}
-
-          {erro && (
-            <p className="text-sm text-destructive">
-              Erro ao conectar: {erro}
-            </p>
-          )}
-
-          {!carregando && !erro && (
-            <>
-              <p className="mb-3 text-sm text-muted-foreground">
-                Conexão bem-sucedida. Status encontrados no banco de dados:
-              </p>
-              <ul className="space-y-1">
-                {statusList.map((status) => (
-                  <li
-                    key={status.id}
-                    className="text-sm text-foreground"
-                  >
-                    • {status.nome}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
+        <section>
+          <h2 className="mb-3 text-sm font-semibold text-foreground">
+            Resumo
+          </h2>
+          <DashboardResumo
+            dados={dados}
+            carregando={carregandoDashboard}
+          />
+        </section>
       </div>
     </div>
   )
