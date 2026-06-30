@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react"
 import { supabase } from "@/lib/supabase"
 import { codigoValido, normalizarCodigo } from "@/lib/validacao"
+import { usePessoa } from "@/contexts/PessoaContext"
+import { NavegacaoPrincipal } from "@/components/NavegacaoPrincipal"
 import type { Pessoa } from "@/types/database"
 
 /**
@@ -12,6 +14,7 @@ import type { Pessoa } from "@/types/database"
  * da casa, antes de existir qualquer um "logado".
  */
 export function PessoasPage() {
+  const { pessoa } = usePessoa()
   const [pessoas, setPessoas] = useState<Pessoa[]>([])
   const [carregando, setCarregando] = useState(true)
 
@@ -78,6 +81,8 @@ export function PessoasPage() {
   return (
     <div className="min-h-screen bg-background px-6 py-10">
       <div className="mx-auto max-w-2xl">
+        {pessoa && <NavegacaoPrincipal />}
+
         <header className="mb-8">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             Pessoas

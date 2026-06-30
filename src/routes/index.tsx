@@ -1,37 +1,99 @@
+import { lazy, Suspense } from "react"
 import { createBrowserRouter } from "react-router-dom"
-import { HojePage } from "@/pages/HojePage"
-import { PessoasPage } from "@/pages/PessoasPage"
-import { ProjetosPage } from "@/pages/ProjetosPage"
-import { ProjetoDetalhePage } from "@/pages/ProjetoDetalhePage"
-import { AgendaPage } from "@/pages/AgendaPage"
-import { ConfiguracoesPage } from "@/pages/ConfiguracoesPage"
 
 /**
  * Definição central de todas as rotas (telas) do sistema.
+ *
+ * Cada página é carregada sob demanda (lazy loading): o navegador só
+ * baixa o código de uma tela quando a pessoa realmente navega até
+ * ela, em vez de baixar o sistema inteiro de uma vez. Isso deixa o
+ * primeiro carregamento do app mais rápido, especialmente em
+ * conexões de celular.
  */
+const HojePage = lazy(() =>
+  import("@/pages/HojePage").then((m) => ({ default: m.HojePage }))
+)
+const PessoasPage = lazy(() =>
+  import("@/pages/PessoasPage").then((m) => ({ default: m.PessoasPage }))
+)
+const ProjetosPage = lazy(() =>
+  import("@/pages/ProjetosPage").then((m) => ({ default: m.ProjetosPage }))
+)
+const ProjetoDetalhePage = lazy(() =>
+  import("@/pages/ProjetoDetalhePage").then((m) => ({
+    default: m.ProjetoDetalhePage,
+  }))
+)
+const AgendaPage = lazy(() =>
+  import("@/pages/AgendaPage").then((m) => ({ default: m.AgendaPage }))
+)
+const ConfiguracoesPage = lazy(() =>
+  import("@/pages/ConfiguracoesPage").then((m) => ({
+    default: m.ConfiguracoesPage,
+  }))
+)
+
+function ComSuspense({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
+        </div>
+      }
+    >
+      {children}
+    </Suspense>
+  )
+}
+
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <HojePage />,
+    element: (
+      <ComSuspense>
+        <HojePage />
+      </ComSuspense>
+    ),
   },
   {
     path: "/pessoas",
-    element: <PessoasPage />,
+    element: (
+      <ComSuspense>
+        <PessoasPage />
+      </ComSuspense>
+    ),
   },
   {
     path: "/projetos",
-    element: <ProjetosPage />,
+    element: (
+      <ComSuspense>
+        <ProjetosPage />
+      </ComSuspense>
+    ),
   },
   {
     path: "/projetos/:id",
-    element: <ProjetoDetalhePage />,
+    element: (
+      <ComSuspense>
+        <ProjetoDetalhePage />
+      </ComSuspense>
+    ),
   },
   {
     path: "/agenda",
-    element: <AgendaPage />,
+    element: (
+      <ComSuspense>
+        <AgendaPage />
+      </ComSuspense>
+    ),
   },
   {
     path: "/configuracoes",
-    element: <ConfiguracoesPage />,
+    element: (
+      <ComSuspense>
+        <ConfiguracoesPage />
+      </ComSuspense>
+    ),
   },
 ])

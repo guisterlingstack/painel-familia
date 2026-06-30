@@ -4,14 +4,14 @@ const ITENS = [
   { caminho: "/", rotulo: "Hoje" },
   { caminho: "/projetos", rotulo: "Projetos" },
   { caminho: "/agenda", rotulo: "Agenda" },
+  { caminho: "/pessoas", rotulo: "Pessoas" },
   { caminho: "/configuracoes", rotulo: "Configurações" },
 ]
 
 /**
  * Barra de navegação simples entre as telas principais do sistema.
- * Reutilizada em Hoje, Projetos e Agenda. Uma navegação mais
- * completa (com Pessoas e Configurações) pode evoluir aqui nas
- * próximas etapas, sem precisar mexer em cada página individualmente.
+ * Reutilizada em todas as páginas principais (Hoje, Projetos, Agenda,
+ * Pessoas, Configurações).
  */
 export function NavegacaoPrincipal() {
   const location = useLocation()
