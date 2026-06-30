@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
+import { dataParaISO } from "@/lib/calendarioMensal"
 
 export interface ProjetoDoDia {
   horarioId: string
@@ -12,7 +13,7 @@ export interface ProjetoDoDia {
 }
 
 /**
- * Busca os projetos programados para o dia da semana de hoje,
+ * Busca os projetos programados para a data real de hoje,
  * cruzando "projeto_horarios" com "projetos" e trazendo dados
  * relacionados (categoria, status, criador) para exibição direta.
  *
@@ -28,7 +29,7 @@ export function useProjetosDoDia() {
     async function carregar() {
       setCarregando(true)
 
-      const diaSemanaHoje = new Date().getDay() // 0 = domingo ... 6 = sábado
+      const hojeISO = dataParaISO(new Date())
 
       const { data, error } = await supabase
         .from("projeto_horarios")
@@ -47,7 +48,7 @@ export function useProjetosDoDia() {
           )
         `
         )
-        .eq("dia_semana", diaSemanaHoje)
+        .eq("data", hojeISO)
         .eq("projetos.arquivado", false)
         .eq("projetos.excluido", false)
         .order("horario")

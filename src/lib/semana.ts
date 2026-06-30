@@ -1,19 +1,16 @@
+import { dataParaISO } from "@/lib/calendarioMensal"
+
 export interface DiaDaSemana {
   data: Date
-  diaSemana: number // 0 = domingo ... 6 = sábado
+  dataISO: string // "YYYY-MM-DD"
   dataFormatada: string // "29/06"
   ehHoje: boolean
 }
 
 /**
  * Calcula os 7 dias de uma semana (domingo a sábado), a partir de
- * qualquer data de referência dentro dessa semana.
- *
- * Essa é a peça central que permite "converter a configuração
- * semanal abstrata (ex: toda Segunda) para o calendário real do
- * ano corrente": para cada dia retornado aqui, sabemos a data real
- * E o dia da semana, então conseguimos cruzar com os horários
- * programados (que só guardam o dia da semana, 0 a 6).
+ * qualquer data de referência dentro dessa semana. Usado para montar
+ * o cabeçalho da grade da Agenda com as datas reais da semana exibida.
  */
 export function calcularDiasDaSemana(dataReferencia: Date): DiaDaSemana[] {
   const hoje = new Date()
@@ -31,7 +28,7 @@ export function calcularDiasDaSemana(dataReferencia: Date): DiaDaSemana[] {
 
     dias.push({
       data,
-      diaSemana: i,
+      dataISO: dataParaISO(data),
       dataFormatada: data.toLocaleDateString("pt-BR", {
         day: "2-digit",
         month: "2-digit",

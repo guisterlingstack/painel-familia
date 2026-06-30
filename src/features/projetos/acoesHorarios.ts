@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase"
 
 export interface HorarioSelecionado {
-  diaSemana: number // 0 = domingo ... 6 = sábado
+  data: string // "YYYY-MM-DD"
   horario: string // "HH:MM:SS"
 }
 
@@ -9,6 +9,10 @@ export interface HorarioSelecionado {
  * Substitui toda a programação de horários de um projeto pela nova
  * lista informada. Apaga os horários antigos e insere os novos —
  * estratégia mais simples e segura do que calcular diferenças.
+ *
+ * Cada item representa uma data REAL específica (não mais um padrão
+ * semanal abstrato) — ex: "marcar este projeto no sábado 04/07/2026
+ * às 19:00", e não "todo sábado às 19:00".
  */
 export async function salvarHorariosProjeto(
   projetoId: string,
@@ -28,7 +32,7 @@ export async function salvarHorariosProjeto(
     .insert(
       horarios.map((h) => ({
         projeto_id: projetoId,
-        dia_semana: h.diaSemana,
+        data: h.data,
         horario: h.horario,
       }))
     )

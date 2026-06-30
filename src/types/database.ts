@@ -64,7 +64,7 @@ export interface ChecklistItem {
 export interface ProjetoHorario {
   id: string
   projeto_id: string
-  dia_semana: number // 0 = domingo ... 6 = sábado
+  data: string // formato "YYYY-MM-DD"
   horario: string // formato "HH:MM:SS"
 }
 

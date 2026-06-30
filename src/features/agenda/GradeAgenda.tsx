@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom"
-import { DIAS_SEMANA, gerarFaixasHorario, formatarHorarioCurto } from "@/lib/calendario"
+import { gerarFaixasHorario, formatarHorarioCurto } from "@/lib/calendario"
 import type { DiaDaSemana } from "@/lib/semana"
 import type { EventoAgenda } from "@/features/agenda/useAgenda"
 
 const FAIXAS_HORARIO = gerarFaixasHorario()
 const ALTURA_LINHA = 28 // px, altura de cada faixa de 30 min
+const ABREV_DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
 
 interface GradeAgendaProps {
   dias: DiaDaSemana[]
@@ -13,17 +14,15 @@ interface GradeAgendaProps {
 
 /**
  * Grade visual da agenda: colunas = dias da semana (com data real),
- * linhas = horários de 30 em 30 min. Eventos que ocupam o mesmo
- * dia + horário (sobreposição, permitida pela especificação) são
+ * linhas = horários de 30 em 30 min. Eventos que ocupam a mesma
+ * data + horário (sobreposição, permitida pela especificação) são
  * exibidos lado a lado dentro da mesma célula de tempo.
  */
 export function GradeAgenda({ dias, eventos }: GradeAgendaProps) {
   const navigate = useNavigate()
 
-  function eventosDoSlot(diaSemana: number, horario: string) {
-    return eventos.filter(
-      (e) => e.diaSemana === diaSemana && e.horario === horario
-    )
+  function eventosDoSlot(dataISO: string, horario: string) {
+    return eventos.filter((e) => e.data === dataISO && e.horario === horario)
   }
 
   return (
@@ -32,15 +31,15 @@ export function GradeAgenda({ dias, eventos }: GradeAgendaProps) {
         {/* Cabeçalho com os dias */}
         <div className="grid grid-cols-[56px_repeat(7,1fr)] border-b border-border bg-card">
           <div />
-          {dias.map((dia) => (
+          {dias.map((dia, index) => (
             <div
-              key={dia.diaSemana}
+              key={dia.dataISO}
               className={`border-l border-border px-2 py-2 text-center ${
                 dia.ehHoje ? "bg-primary/5" : ""
               }`}
             >
               <p className="text-[11px] font-medium text-muted-foreground">
-                {DIAS_SEMANA[dia.diaSemana].abreviacao}
+                {ABREV_DIAS[index]}
               </p>
               <p
                 className={`text-sm font-semibold tabular-nums ${
@@ -70,10 +69,10 @@ export function GradeAgenda({ dias, eventos }: GradeAgendaProps) {
               </div>
 
               {dias.map((dia) => {
-                const slot = eventosDoSlot(dia.diaSemana, horario)
+                const slot = eventosDoSlot(dia.dataISO, horario)
                 return (
                   <div
-                    key={dia.diaSemana}
+                    key={dia.dataISO}
                     className={`flex gap-px border-l border-border/60 p-px ${
                       dia.ehHoje ? "bg-primary/5" : ""
                     }`}

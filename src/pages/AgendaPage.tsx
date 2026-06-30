@@ -16,10 +16,14 @@ import { NavegacaoPrincipal } from "@/components/NavegacaoPrincipal"
  */
 export function AgendaPage() {
   const [dataReferencia, setDataReferencia] = useState(new Date())
-  const { eventos, carregando } = useAgenda()
 
   const dias = calcularDiasDaSemana(dataReferencia)
   const intervalo = formatarIntervaloSemana(dias)
+
+  const dataInicioISO = dias[0].dataISO
+  const dataFimISO = dias[dias.length - 1].dataISO
+
+  const { eventos, carregando } = useAgenda(dataInicioISO, dataFimISO)
 
   function irParaHoje() {
     setDataReferencia(new Date())

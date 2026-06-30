@@ -50,7 +50,7 @@ export function ProjetoDetalhePage() {
 
   useEffect(() => {
     setHorariosSelecionados(
-      horarios.map((h) => ({ diaSemana: h.dia_semana, horario: h.horario }))
+      horarios.map((h) => ({ data: h.data, horario: h.horario }))
     )
   }, [horarios])
 

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
+import { dataParaISO } from "@/lib/calendarioMensal"
 
 export interface EventoAgenda {
   horarioId: string
-  diaSemana: number // 0 = domingo ... 6 = sábado
+  data: string // "YYYY-MM-DD"
   horario: string // "HH:MM:SS"
   projetoId: string
   nomeProjeto: string
@@ -11,15 +12,15 @@ export interface EventoAgenda {
 }
 
 /**
- * Busca todos os horários programados de todos os projetos ativos
- * (não arquivados, não excluídos).
+ * Busca os horários programados de todos os projetos ativos (não
+ * arquivados, não excluídos) cujas datas caem dentro do intervalo
+ * informado (a semana sendo exibida na tela de Agenda).
  *
- * A programação é um padrão semanal recorrente (ex: "toda Segunda
- * às 08:00"), então não filtramos por uma semana específica aqui —
- * a tela de Agenda é quem cruza esse padrão com os dias reais da
- * semana sendo exibida (ver src/lib/semana.ts).
+ * Diferente da versão anterior (baseada em dia da semana abstrato),
+ * agora cada horário já tem uma data real — então não há conversão
+ * a fazer aqui, só um filtro direto por intervalo de datas.
  */
-export function useAgenda() {
+export function useAgenda(dataInicioISO: string, dataFimISO: string) {
   const [eventos, setEventos] = useState<EventoAgenda[]>([])
   const [carregando, setCarregando] = useState(true)
 
@@ -34,7 +35,7 @@ export function useAgenda() {
         .select(
           `
           id,
-          dia_semana,
+          data,
           horario,
           projetos!inner (
             id,
@@ -45,6 +46,8 @@ export function useAgenda() {
           )
         `
         )
+        .gte("data", dataInicioISO)
+        .lte("data", dataFimISO)
         .eq("projetos.arquivado", false)
         .eq("projetos.excluido", false)
 
@@ -58,7 +61,7 @@ export function useAgenda() {
 
       const lista: EventoAgenda[] = data.map((linha: any) => ({
         horarioId: linha.id,
-        diaSemana: linha.dia_semana,
+        data: linha.data,
         horario: linha.horario,
         projetoId: linha.projetos.id,
         nomeProjeto: linha.projetos.nome,
@@ -74,7 +77,9 @@ export function useAgenda() {
     return () => {
       cancelado = true
     }
-  }, [])
+  }, [dataInicioISO, dataFimISO])
 
   return { eventos, carregando }
 }
+
+export { dataParaISO }
