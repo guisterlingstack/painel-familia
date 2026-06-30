@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import { usePessoa } from "@/contexts/PessoaContext"
 import { useDashboard } from "@/features/dashboard/useDashboard"
 import { useProjetosDoDia } from "@/features/dashboard/useProjetosDoDia"
@@ -56,6 +57,16 @@ export function HojePage() {
             </div>
           )}
         </header>
+
+        <nav className="mb-8 flex gap-4 border-b border-border pb-3">
+          <span className="text-sm font-medium text-foreground">Hoje</span>
+          <Link
+            to="/projetos"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            Projetos
+          </Link>
+        </nav>
 
         <section className="mb-8">
           <h2 className="mb-3 text-sm font-semibold text-foreground">
