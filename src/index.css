@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Variáveis de cor do sistema.
+  Usamos HSL (matiz, saturação, luminosidade) sem a função hsl() aqui
+  porque o Tailwind monta a cor final sozinho — isso é o padrão usado
+  pelo shadcn/ui e permite trocar o tema (claro/escuro) trocando só
+  esses valores, sem mexer em nenhum componente.
+*/
+@layer base {
+  :root {
+    --background: 30 20% 98%;
+    --foreground: 20 14% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 12%;
+
+    --primary: 230 45% 32%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 30 15% 94%;
+    --secondary-foreground: 20 14% 12%;
+
+    --muted: 30 12% 92%;
+    --muted-foreground: 20 8% 45%;
+
+    --accent: 230 45% 32%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 4 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 14% 88%;
+    --input: 30 14% 88%;
+    --ring: 230 45% 32%;
+
+    --radius: 0.625rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
