@@ -28,6 +28,38 @@ async function registrarLog(
   })
 }
 
+interface AtualizarProjetoInput {
+  nome?: string
+  descricao?: string | null
+  statusId?: string | null
+  prioridadeId?: string | null
+  categoriaId?: string | null
+}
+
+export async function atualizarProjeto(
+  projetoId: string,
+  pessoaId: string,
+  campos: AtualizarProjetoInput
+) {
+  const payload: Record<string, unknown> = { editado_por: pessoaId }
+  if (campos.nome !== undefined) payload.nome = campos.nome
+  if (campos.descricao !== undefined) payload.descricao = campos.descricao
+  if (campos.statusId !== undefined) payload.status_id = campos.statusId
+  if (campos.prioridadeId !== undefined)
+    payload.prioridade_id = campos.prioridadeId
+  if (campos.categoriaId !== undefined)
+    payload.categoria_id = campos.categoriaId
+
+  const { error } = await supabase
+    .from("projetos")
+    .update(payload)
+    .eq("id", projetoId)
+
+  if (error) throw new Error(error.message)
+
+  await registrarLog(projetoId, pessoaId, "editado")
+}
+
 export async function criarProjeto(input: NovoProjetoInput) {
   const { data, error } = await supabase
     .from("projetos")
