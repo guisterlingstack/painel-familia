@@ -2,6 +2,9 @@ import { useEffect, useState, type FormEvent } from "react"
 import { supabase } from "@/lib/supabase"
 import { codigoValido, normalizarCodigo } from "@/lib/validacao"
 import { usePessoa } from "@/contexts/PessoaContext"
+import { useEhAdmin } from "@/features/pessoas/useEhAdmin"
+import { editarPessoa, excluirPessoa } from "@/features/pessoas/acoesPessoa"
+import { ItemPessoa } from "@/features/pessoas/ItemPessoa"
 import { NavegacaoPrincipal } from "@/components/NavegacaoPrincipal"
 import type { Pessoa } from "@/types/database"
 
@@ -15,6 +18,7 @@ import type { Pessoa } from "@/types/database"
  */
 export function PessoasPage() {
   const { pessoa } = usePessoa()
+  const ehAdmin = useEhAdmin()
   const [pessoas, setPessoas] = useState<Pessoa[]>([])
   const [carregando, setCarregando] = useState(true)
 
@@ -78,17 +82,46 @@ export function PessoasPage() {
     buscarPessoas()
   }
 
+  async function handleEditarPessoa(id: string, nome: string, codigo: string) {
+    await editarPessoa(id, nome, codigo)
+    buscarPessoas()
+  }
+
+  async function handleExcluirPessoa(id: string, nomePessoa: string) {
+    const confirmado = window.confirm(
+      `Excluir o cadastro de "${nomePessoa}"? Esta ação não pode ser desfeita. ` +
+        `Projetos já criados por essa pessoa não serão apagados.`
+    )
+    if (!confirmado) return
+
+    try {
+      await excluirPessoa(id)
+      buscarPessoas()
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Erro ao excluir pessoa.")
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background px-6 py-10">
       <div className="mx-auto max-w-2xl">
         {pessoa && <NavegacaoPrincipal />}
 
         <header className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Pessoas
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Pessoas
+            </h1>
+            {ehAdmin && (
+              <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                Modo administrador
+              </span>
+            )}
+          </div>
           <p className="mt-1 text-sm text-muted-foreground">
             Cadastre os moradores que poderão usar o sistema.
+            {ehAdmin &&
+              " Como administrador, você pode editar e excluir os cadastros existentes."}
           </p>
         </header>
 
@@ -167,18 +200,15 @@ export function PessoasPage() {
 
           {!carregando && pessoas.length > 0 && (
             <ul className="divide-y divide-border">
-              {pessoas.map((pessoa) => (
-                <li
-                  key={pessoa.id}
-                  className="flex items-center justify-between py-2.5"
-                >
-                  <span className="text-sm text-foreground">
-                    {pessoa.nome}
-                  </span>
-                  <span className="rounded bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
-                    {pessoa.codigo}
-                  </span>
-                </li>
+              {pessoas.map((p) => (
+                <ItemPessoa
+                  key={p.id}
+                  pessoa={p}
+                  ehEuMesmo={pessoa?.id === p.id}
+                  podeGerenciar={ehAdmin}
+                  onEditar={handleEditarPessoa}
+                  onExcluir={(id) => handleExcluirPessoa(id, p.nome)}
+                />
               ))}
             </ul>
           )}
