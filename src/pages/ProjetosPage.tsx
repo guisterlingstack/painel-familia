@@ -5,6 +5,7 @@ import { usePessoa } from "@/contexts/PessoaContext"
 import { useProjetos, type AbaProjetos } from "@/features/projetos/useProjetos"
 import { ProjetoCard } from "@/features/projetos/ProjetoCard"
 import { NovoProjetoDialog } from "@/features/projetos/NovoProjetoDialog"
+import { NavegacaoPrincipal } from "@/components/NavegacaoPrincipal"
 import {
   duplicarProjeto,
   arquivarProjeto,
@@ -73,6 +74,8 @@ export function ProjetosPage() {
   return (
     <div className="min-h-screen bg-background px-6 py-10">
       <div className="mx-auto max-w-5xl">
+        <NavegacaoPrincipal />
+
         <header className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             Projetos
